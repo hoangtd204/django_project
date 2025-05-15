@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% if student %}
+        <h2>Student Found:</h2>
+        <ul>
+            <li>ID: {{ student.student_id }}</li>
+            <li>Name: {{ student.name }}</li>
+            <li>Age: {{ student.age }}</li>
+            <li>Major: {{ student.major }}</li>
+        </ul>
+    {% elif error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>

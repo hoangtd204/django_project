@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Student</title>
+</head>
+<body>
+    <h1>Search Student by ID</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="student_id">Student ID:</label>
+        <input type="text" name="student_id" id="student_id" required>
+        <button type="submit">Search</button>
+    </form>
+
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>Form GET/POST</title></head>
+<body>
+    <h2>GET và POST Form</h2>
+
+    {% if name %}
+        <p>Giá trị từ GET: {{ name }}</p>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Nhập tên">
+        <button type="submit">Gửi POST</button>
+    </form>
+</body>
+</html>
