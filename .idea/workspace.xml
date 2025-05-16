@@ -5,16 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5966571b-2ad8-4d56-bb1f-0919f23a34bd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/students/crud_students/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/students/crud_students/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/students/templates/students/student_search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/PythonProject1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PythonProject1.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/templates/student/forms.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/templates/student/show_inf.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sms_project/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/sms_project/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sms_project/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/sms_project/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/templates/students/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/students/templates/students/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/templates/students/forms.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/templates/students/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/templates/students/show_inf.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/templates/students/student_search.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/students/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -54,9 +54,10 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/students/templates/student" />
+      <recent name="$PROJECT_DIR$/students/templates" />
       <recent name="$PROJECT_DIR$/students/crud_students" />
       <recent name="$PROJECT_DIR$/students/templates/students" />
-      <recent name="$PROJECT_DIR$/students/templates" />
     </key>
   </component>
   <component name="SharedIndexes">

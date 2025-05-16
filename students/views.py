@@ -1,38 +1,37 @@
-from django.shortcuts import render,redirect
-from django.http import HttpResponse
-from django.urls import reverse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import render
+from students.crud_students.serializers import StudentSerializer
 from .models import Student
 
 
-def index(request):
-    return render(request, 'students/index.html')
+class StudentCreate(APIView):
+    error = None
+    def post(self, request):
+        student= request.data
+        serializer = StudentSerializer(data=student)
+        if serializer.is_valid():
+            serializer.save()
+            return render(request, 'student/forms.html', {'success': 'Student registered successfully!'})
+        else:
 
-def handle_get_post(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        return HttpResponse(f"You just have send with a name: {name}")
-    else:
-        name = request.GET.get('name', '')
-        return render(request, 'students/forms.html', {'name': name})
+            error = "Student creation failed"
+            return render(request, 'student/forms.html', {'error': error })
+    def get(self, request):
+        return render(request, 'student/forms.html')
 
 
-
-
-
-def student_search_form(request, student_id):
+def student_search_form(request):
+    student = None
+    error = None
     context = {}
-    try:
-        student = Student.objects.get(student_id=student_id)
-        context['student'] = student
-    except Student.DoesNotExist:
-        context['error'] = "Student not found"
+    student_id = request.GET.get('student_id')
+    if student_id:
+        try:
+            student = Student.objects.get(student_id=student_id)
+            context['student'] = student
+        except Student.DoesNotExist:
+            error = "Student not found"
 
-    return render(request, 'students/show_inf.html', context)
-
-def create_reverse(request):
-    if request.method == 'POST':
-        student_id = request.POST.get('student_id')
-        if student_id:
-            url = reverse('show_inf', kwargs={'student_id': student_id})
-            return redirect(url)
-    return render(request, 'students/student_search.html')
+    return render(request, 'student/show_inf.html', {'student': student, 'error': error})
