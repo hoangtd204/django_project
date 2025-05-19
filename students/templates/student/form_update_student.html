@@ -113,16 +113,18 @@
 
     <hr>
 
-    {% if error_for_searching %}
-        <p class="error">{{ error_for_searching }}</p>
+    {% if error_for_update %}
+        <p class="error">{{ error_for_update }}</p>
     {% elif student %}
-        <h3>Student Information</h3>
-        <ul>
-            <li>Student ID: {{ student.student_id }}</li>
-            <li>Name: {{ student.name }}</li>
-            <li>Age: {{ student.age }}</li>
-            <li>Major: {{ student.major }}</li>
-        </ul>
+        <h3>Update ur inf here</h3>
+         <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="student_id" placeholder="Student ID" required>
+        <input type="text" name="name" placeholder="Full Name" required>
+        <input type="number" name="age" placeholder="Age" required min="1" max="120">
+        <input type="text" name="major" placeholder="Major" required>
+        <button type="submit">Register</button>
+         </form>
     {% endif %}
 </body>
 </html>

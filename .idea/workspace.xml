@@ -5,16 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5966571b-2ad8-4d56-bb1f-0919f23a34bd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/students/templates/student/forms.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/students/templates/student/show_inf.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/crud_students/create_student.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/crud_students/search_student_byid.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/crud_students/update_student.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/middleware.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/students/templates/student/form_update_student.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sms_project/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/sms_project/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sms_project/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/sms_project/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/templates/students/forms.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/templates/students/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/templates/students/show_inf.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/templates/students/student_search.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/templates/student/forms.html" beforeDir="false" afterPath="$PROJECT_DIR$/students/templates/student/form_create_student.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/students/templates/student/show_inf.html" beforeDir="false" afterPath="$PROJECT_DIR$/students/templates/student/show_inf.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/students/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -25,8 +26,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -48,7 +49,7 @@
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;trainingday165&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/hoangtd/PycharmProjects/django_project&quot;
   }
 }</component>
