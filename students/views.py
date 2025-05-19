@@ -1,37 +1,53 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+
 from django.shortcuts import render
-from students.crud_students.serializers import StudentSerializer
-from .models import Student
+from django.template.response import TemplateResponse
+from students.crud_students.search_student_byid import find_student_by_id
+from students.crud_students.create_student import save_student
+from students.crud_students.update_student import  change_student_inf
 
 
-class StudentCreate(APIView):
-    error = None
-    def post(self, request):
-        student= request.data
-        serializer = StudentSerializer(data=student)
-        if serializer.is_valid():
-            serializer.save()
-            return render(request, 'student/forms.html', {'success': 'Student registered successfully!'})
+def creat_student(request):
+    if request.method == 'POST':
+        student = {
+            'student_id': request.POST.get('student_id'),
+            'name': request.POST.get('name'),
+            'age': request.POST.get('age'),
+            'major': request.POST.get('major'),
+        }
+        result = save_student(student)
+        if result:
+            return render(request, 'student/form_create_student.html', {
+                'success': 'Student registered successfully!'
+            })
         else:
+            return render(request, 'student/form_create_student.html', {
+                'error': 'Student creation failed'
+            })
+    else:
+        return render(request, 'student/form_create_student.html')
 
-            error = "Student creation failed"
-            return render(request, 'student/forms.html', {'error': error })
-    def get(self, request):
-        return render(request, 'student/forms.html')
 
-
+# search_student_by_sid
 def student_search_form(request):
-    student = None
-    error = None
-    context = {}
-    student_id = request.GET.get('student_id')
-    if student_id:
-        try:
-            student = Student.objects.get(student_id=student_id)
-            context['student'] = student
-        except Student.DoesNotExist:
-            error = "Student not found"
+    student_id_for_searching = request.GET.get('student_id', '')
+    student, error = find_student_by_id(student_id_for_searching)
+    context = {
+        'student': student,
+        'error_for_searching': error
+    }
+    return TemplateResponse(request, 'student/show_inf.html', context)
 
-    return render(request, 'student/show_inf.html', {'student': student, 'error': error})
+
+
+
+def student_update(request):
+    if request.method == 'GET':
+        student_id_for_updating = request.GET.get('student_id', '')
+        student, error = find_student_by_id(student_id_for_updating)
+        context = {
+            'student': student,
+            'error_for_update': error
+        }
+        return TemplateResponse(request, 'student/form_update_student.html', context)
+    else :
+        return render(request, 'student/form_update_student.html')
