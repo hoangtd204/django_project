@@ -8,6 +8,7 @@ def find_student_by_id(student_id: str):
         return None, None
     try:
         student = Student.objects.get(student_id=student_id)
-        return model_to_dict(student), None
+        student_dict = model_to_dict(student)
+        return student_dict, None
     except Student.DoesNotExist:
         return None, "Student not found."
