@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5966571b-2ad8-4d56-bb1f-0919f23a34bd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/students/crud_students/delete_student.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sms_project/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/sms_project/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/crud_students/create_student.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/crud_students/create_student.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/crud_students/search_student_byid.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/crud_students/search_student.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/crud_students/update_student.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/crud_students/update_student.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/templates/student/form_create_student.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/templates/student/form_update_student.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/templates/student/show_inf.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
