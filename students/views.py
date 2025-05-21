@@ -1,66 +1,106 @@
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from students.models import Student
+from students.crud_students.search_student import find_student_by_id
+from students.crud_students.create_student import create_student
+from students.crud_students.update_student import (
+    change_student_inf,
+    find_student_by_id_for_update,
+)
 
-from django.shortcuts import render
-from django.template.response import TemplateResponse
-from students.crud_students.search_student_byid import find_student_by_id
-from students.crud_students.create_student import save_student
-from students.crud_students.update_student import  change_student_inf,convert_json_to_dict,find_student_by_id_for_update
 
 
+@api_view(["POST"])
 def creat_student(request):
-    if request.method == 'POST':
-        student = convert_json_to_dict(request)
-        result = save_student(student)
-        if result:
-            return render(request, 'student/form_create_student.html', {
-                'success': 'Student registered successfully!'
-            })
-        else:
-            return render(request, 'student/form_create_student.html', {
-                'error': 'Student creation failed'
-            })
+    result = create_student(request.data)
+    if result:
+        return Response(
+            {"success": True, "message": "Created Successfully", "data": request.data},
+            status=status.HTTP_201_CREATED,
+        )
     else:
-        return render(request, 'student/form_create_student.html')
+        return Response(
+            {"success": False, "message": "Create Failed", "data": None},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 # search_student_by_sid
-def student_search_form(request):
-    student_id_for_searching = request.GET.get('student_id', '')
-    student, error = find_student_by_id(student_id_for_searching)
-    context = {
-        'student': student,
-        'error_for_search': error
-    }
-    return TemplateResponse(request, 'student/show_inf.html', context)
+@api_view(["GET"])
+def search_student(request):
+    student_id_for_searching = request.GET.get("student_id", "")
+    student, errors = find_student_by_id(student_id_for_searching)
 
-
-#update_student's inf
-def student_update(request):
-    if request.method == 'POST':
-        student_id_for_updating = request.POST.get('student_id', '')
-        form_type = request.POST.get('form_type')
-        if form_type == 'form1':
-            student, error = find_student_by_id(student_id_for_updating)
-            context = {
-                'student': student,
-                'error_for_updating': error
-            }
-            return TemplateResponse(request, 'student/form_update_student.html', context)
-        else:
-            # student_id_from form1
-            student_id = request.POST.get('student_id_for_update')
-            student_target = find_student_by_id_for_update(student_id)
-            id_of_student_target = student_target.get('id')
-            #get student from post request
-            student_for_updating  = convert_json_to_dict(request)
-            updated, error = change_student_inf(id_of_student_target, student_for_updating)
-            context = {
-                'error_for_updating': error,
-            }
-
-            if updated:
-                return TemplateResponse(request, 'student/form_update_student.html', context)
-            else:
-
-                return TemplateResponse(request, 'student/form_update_student.html', context)
+    if student:
+        return Response(
+            {
+                "success": True,
+                "message": "Student Found",
+                "data": student,
+                "error": errors,
+            },
+            status=status.HTTP_200_OK,
+        )
     else:
-        return TemplateResponse(request, 'student/form_update_student.html')
+        return Response(
+            {
+                "success": False,
+                "message": "Student Not Found",
+                "data": None,
+                "error": errors,
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+# #update_student's inf
+@api_view(["PUT"])
+def update_student(request, student_id):
+    state, student = find_student_by_id_for_update(student_id)
+    if state and student:
+        result, student_after = change_student_inf(request, student)
+
+        if result:
+            return Response(
+                {
+                    "success": True,
+                    "message": "Student Updated",
+                    "data": student_after,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            {
+                "success": False,
+                "message": "Update Failed",
+                "data": None,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    return Response(
+        {
+            "success": False,
+            "message": "Student Not Found",
+            "data": None,
+        },
+        status=status.HTTP_404_NOT_FOUND,
+    )
+
+
+@api_view(["DELETE"])
+def delete_student(request, student_id):
+    try:
+        student = Student.objects.get(student_id=student_id)
+        student.delete()
+        return Response(
+            {"success": True, "message": "Student deleted successfully."},
+            status=status.HTTP_204_NO_CONTENT,
+        )
+
+    except Student.DoesNotExist:
+        return Response(
+            {"success": False, "message": "Student not found."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
