@@ -11,4 +11,4 @@ def find_student_by_id(student_id: str):
         student = StudentSerializer(student).data
         return student, None
     except Student.DoesNotExist:
-        return (None,)
+        return None , None

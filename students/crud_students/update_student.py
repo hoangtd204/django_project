@@ -11,7 +11,6 @@ def find_student_by_id_for_update(student_id):
     except Student.DoesNotExist:
         return False, None
 
-
 def change_student_inf(request, student):
     serializer = StudentSerializer(student, data=request.data, partial=True)
     if serializer.is_valid():
