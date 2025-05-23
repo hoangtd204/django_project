@@ -35,5 +35,10 @@ class Student(models.Model):
     class Meta:
         db_table = 'infor'
 
-# class StudentClass(models.Model):
-#
+class StudentClass(models.Model):
+      className = models.CharField(max_length=50,
+            unique=True,
+            validators=[
+                RegexValidator()
+            ]
+      )
