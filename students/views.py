@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from students.models import Student
+from students.crud_students.serializers import StudentSerializer
 from students.crud_students.search_student import find_student_by_id
 from students.crud_students.create_student import create_student
 from students.crud_students.update_student import (
@@ -10,23 +11,22 @@ from students.crud_students.update_student import (
 )
 
 
-
 @api_view(["POST"])
 def creat_student(request):
-    result = create_student(request.data)
+    result, alert  = create_student(request.data)
     if result:
+
         return Response(
-            {"success": True, "message": "Created Successfully", "data": request.data},
+            {"success": True, "message": "Created Successfully", "data": alert},
             status=status.HTTP_201_CREATED,
         )
     else:
         return Response(
-            {"success": False, "message": "Create Failed", "data": None},
-            status=status.HTTP_400_BAD_REQUEST,
+            {"success": False, "message": "Create Failed", "errors": alert},
+            status= status.HTTP_422_UNPROCESSABLE_ENTITY,
         )
 
-
-# search_student_by_sid
+#search_student_by_sid
 @api_view(["GET"])
 def search_student(request):
     student_id_for_searching = request.GET.get("student_id", "")
@@ -53,6 +53,13 @@ def search_student(request):
             status=status.HTTP_404_NOT_FOUND,
         )
 
+@api_view(['GET'])
+def student_list(request):
+    students = Student.objects.all()
+    serializer = StudentSerializer(students, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # #update_student's inf
 @api_view(["PUT"])
 def update_student(request, student_id):
@@ -74,7 +81,7 @@ def update_student(request, student_id):
             {
                 "success": False,
                 "message": "Update Failed",
-                "data": None,
+                "errors": student_after,
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
@@ -82,7 +89,7 @@ def update_student(request, student_id):
     return Response(
         {
             "success": False,
-            "message": "Student Not Found",
+            "message": "Student is not exist",
             "data": None,
         },
         status=status.HTTP_404_NOT_FOUND,
@@ -104,3 +111,5 @@ def delete_student(request, student_id):
             {"success": False, "message": "Student not found."},
             status=status.HTTP_404_NOT_FOUND,
         )
+
+

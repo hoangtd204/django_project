@@ -5,6 +5,6 @@ def create_student(student):
     serializer = StudentSerializer(data=student)
     if serializer.is_valid():
         serializer.save()
-        return True
+        return True, serializer.data
     else:
-        return False
+        return False, serializer.errors
