@@ -47,6 +47,17 @@ class ClassNameSerializer(serializers.ModelSerializer):
         model = ClassName
         fields = '__all__'
 
+    def to_internal_value(self, value):
+        allowed = set(self.fields.keys())
+        incoming = set(value.keys())
+        extra = incoming - allowed
+        if extra:
+            raise serializers.ValidationError(
+                {field: "This field is not allowed." for field in extra}
+            )
+        return super().to_internal_value(value)
+
+
 class StudentClassSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
 
@@ -63,6 +74,7 @@ class StudentClassSerializer(serializers.ModelSerializer):
                 {field: "This field is not allowed." for field in extra}
             )
         return super().to_internal_value(value)
+
     def validate(self, data):
         student = data.get('student')
         name = data.get('classname')

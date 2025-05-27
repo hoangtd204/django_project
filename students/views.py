@@ -65,7 +65,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-    def list(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         try:
            students=self.get_object()
            serializer=StudentSerializer(students, many=True)
@@ -78,6 +78,13 @@ class StudentViewSet(viewsets.ModelViewSet):
                 {"success": False, "data":serializer.errors,},
                 status=status.HTTP_204_NO_CONTENT,
             )
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
 #Viewsets for ClassName
 class ClassNameViewSet(viewsets.ModelViewSet):
@@ -114,7 +121,7 @@ class ClassNameViewSet(viewsets.ModelViewSet):
 class StudentClassViewSet(viewsets.ModelViewSet):
     queryset = StudentClass.objects.all()
     serializer_class = StudentClassSerializer
-    lookup_field = 'student'
+    lookup_field = 'id'
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
@@ -132,6 +139,12 @@ class StudentClassViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def retrieve(self, request, *args, **kwargs):
         try:
             students = self.get_object()
             serializer = StudentSerializer(students, many=True)
@@ -141,6 +154,18 @@ class StudentClassViewSet(viewsets.ModelViewSet):
             )
         except Student.DoesNotExist:
             return Response(
-                {"success": False, "data": serializer.errors, },
+                {"success": False, "data": serializer.errors,},
                 status=status.HTTP_204_NO_CONTENT,
             )
+
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        today = timezone.now().date()
+        if instance.start_date <= today <= instance.end_date:
+            return Response(
+                {"detail": "Cannot delete student class because it's active today."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return super().destroy(request, *args, **kwargs)
