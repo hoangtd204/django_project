@@ -1,115 +1,146 @@
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import viewsets
 from rest_framework.response import Response
-from students.models import Student
-from students.crud_students.serializers import StudentSerializer
-from students.crud_students.search_student import find_student_by_id
-from students.crud_students.create_student import create_student
-from students.crud_students.update_student import (
-    change_student_inf,
-    find_student_by_id_for_update,
-)
+from rest_framework import status
+from datetime import timedelta
+from django.utils import timezone
+from .models import Student, ClassName, StudentClass
+from students.crud_students.serializers import StudentSerializer, ClassNameSerializer, StudentClassSerializer
 
 
-@api_view(["POST"])
-def creat_student(request):
-    result, alert  = create_student(request.data)
-    if result:
+#Viewsets for Student
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+    lookup_field = 'student_id'
 
-        return Response(
-            {"success": True, "message": "Created Successfully", "data": alert},
-            status=status.HTTP_201_CREATED,
-        )
-    else:
-        return Response(
-            {"success": False, "message": "Create Failed", "errors": alert},
-            status= status.HTTP_422_UNPROCESSABLE_ENTITY,
-        )
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+           self.perform_create(serializer)
+           return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+           return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#search_student_by_sid
-@api_view(["GET"])
-def search_student(request):
-    student_id_for_searching = request.GET.get("student_id", "")
-    student, errors = find_student_by_id(student_id_for_searching)
+    def update(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+        except Student.DoesNotExist:
+            return Response(
+                {"success": False, "message": "Student not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-    if student:
-        return Response(
-            {
-                "success": True,
-                "message": "Student Found",
-                "data": student,
-                "error": errors,
-            },
-            status=status.HTTP_200_OK,
-        )
-    else:
-        return Response(
-            {
-                "success": False,
-                "message": "Student Not Found",
-                "data": None,
-                "error": errors,
-            },
-            status=status.HTTP_404_NOT_FOUND,
-        )
-
-@api_view(['GET'])
-def student_list(request):
-    students = Student.objects.all()
-    serializer = StudentSerializer(students, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-# #update_student's inf
-@api_view(["PUT"])
-def update_student(request, student_id):
-    state, student = find_student_by_id_for_update(student_id)
-    if state and student:
-        result, student_after = change_student_inf(request, student)
-
-        if result:
+        serializer = self.get_serializer(instance, data=request.data, partial=False)
+        if serializer.is_valid():
+            self.perform_update(serializer)
             return Response(
                 {
                     "success": True,
-                    "message": "Student Updated",
-                    "data": student_after,
+                    "message": "Student updated successfully.",
+                    "data": serializer.data
                 },
-                status=status.HTTP_200_OK,
+                status=status.HTTP_200_OK
             )
-
         return Response(
             {
                 "success": False,
-                "message": "Update Failed",
-                "errors": student_after,
+                "message": "Validation failed.",
+                "errors": serializer.errors
             },
-            status=status.HTTP_400_BAD_REQUEST,
+            status=status.HTTP_400_BAD_REQUEST
         )
 
-    return Response(
-        {
-            "success": False,
-            "message": "Student is not exist",
-            "data": None,
-        },
-        status=status.HTTP_404_NOT_FOUND,
-    )
+    def destroy(self, request, *args, **kwargs):
+        try:
+            student =self.get_object()
+            student.delete()
+            return Response(
+                {"success": True, "message": "Student deleted successfully."},
+                status=status.HTTP_200_OK,
+            )
+
+        except Student.DoesNotExist:
+            return Response(
+                {"success": False, "message": "Student not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    def list(self, request, *args, **kwargs):
+        try:
+           students=self.get_object()
+           serializer=StudentSerializer(students, many=True)
+           return Response(
+            {"success": True,"data":serializer.data},
+            status=status.HTTP_200_OK,
+            )
+        except Student.DoesNotExist:
+            return Response(
+                {"success": False, "data":serializer.errors,},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
+#Viewsets for ClassName
+class ClassNameViewSet(viewsets.ModelViewSet):
+    queryset = ClassName.objects.all()
+    serializer_class = ClassNameSerializer
+    lookup_field = 'name'
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        today = timezone.now().date()
+        has_students = StudentClass.objects.filter(
+            classname=instance,
+            start_date__lte=today,
+            end_date__gte=today
+        ).exists()
+
+        if has_students:
+            return Response(
+                {"detail": "Can not delete student is learning in the class."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return super().destroy(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        if 'name' in request.data:
+            return Response(
+                {"error": "Cannot update the name field."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return super().update(request, *args, **kwargs)
 
 
-@api_view(["DELETE"])
-def delete_student(request, student_id):
-    try:
-        student = Student.objects.get(student_id=student_id)
-        student.delete()
-        return Response(
-            {"success": True, "message": "Student deleted successfully."},
-            status=status.HTTP_204_NO_CONTENT,
-        )
+class StudentClassViewSet(viewsets.ModelViewSet):
+    queryset = StudentClass.objects.all()
+    serializer_class = StudentClassSerializer
+    lookup_field = 'student'
 
-    except Student.DoesNotExist:
-        return Response(
-            {"success": False, "message": "Student not found."},
-            status=status.HTTP_404_NOT_FOUND,
-        )
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
 
+        if 'start_date' not in data:
+            data['start_date'] = timezone.now().date()
 
+        if 'end_date' not in data:
+            data['end_date'] = timezone.now().date() + timedelta(days=30)
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            students = self.get_object()
+            serializer = StudentSerializer(students, many=True)
+            return Response(
+                {"success": True, "data": serializer.data},
+                status=status.HTTP_200_OK,
+            )
+        except Student.DoesNotExist:
+            return Response(
+                {"success": False, "data": serializer.errors, },
+                status=status.HTTP_204_NO_CONTENT,
+            )

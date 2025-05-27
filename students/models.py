@@ -1,6 +1,4 @@
 from django.db import models
-from django.core.validators import RegexValidator
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Student(models.Model):
     MAJOR_CHOICES = [
@@ -11,34 +9,25 @@ class Student(models.Model):
         ("Cybersecurity", "Cybersecurity"),
         ("Cloud Computing", "Cloud Computing"),
     ]
-    student_id = models.CharField(max_length=7,
-        unique=True,
-        validators=[
-            RegexValidator(
-                regex=r'^PH\d{5}$',
-                message='Student ID must start with "PH" followed by 5 digits (ex:PH12345)'
-            )
-        ])
-    name = models.CharField(max_length=50,
-        validators=[
-            RegexValidator(
-                regex=r'^[A-Za-z ]+$',
-                message='Only letters (A–Z, a–z) and spaces are allowed.'
-            )
-        ])
-    age = models.IntegerField(validators=[
-            MinValueValidator(10, message="Age must be at least 10."),
-            MaxValueValidator(100, message="Age must be at most 100."),
-        ])
-    major = models.CharField(max_length=50, choices=MAJOR_CHOICES)
+    student_id = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=100)
+    age = models.IntegerField()
+    major = models.CharField(max_length=100, choices=MAJOR_CHOICES)
 
-    class Meta:
-        db_table = 'infor'
+
+
+
+class ClassName(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    max_size = models.IntegerField()
+
+
 
 class StudentClass(models.Model):
-      className = models.CharField(max_length=50,
-            unique=True,
-            validators=[
-                RegexValidator()
-            ]
-      )
+    student = models.ForeignKey(Student, to_field='student_id', on_delete=models.CASCADE)
+    classname = models.ForeignKey(ClassName, to_field='name', on_delete=models.PROTECT)
+    registered_at = models.DateTimeField(auto_now_add=True)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+
+
