@@ -64,16 +64,6 @@ class Teacher(models.Model):
         db_table = "teacher"
 
 
-class ClassName(models.Model):
-    class_id = models.CharField(max_length=10, primary_key=True)
-    class_name = models.CharField(max_length=100)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    max_size = models.IntegerField()
-    start_date = models.DateField()
-    end_date = models.DateField()
-    class Meta:
-        db_table = "class_name"
-
 
 class Location(models.Model):
     room_number = models.CharField(max_length=10, primary_key=True, unique=True)
@@ -84,25 +74,37 @@ class Location(models.Model):
 
 
 class Schedule(models.Model):
-    schedule_id = models.CharField(primary_key=True, unique=True)
-    class_id = models.ForeignKey(ClassName, on_delete=models.CASCADE)
-    room_number = models.ForeignKey(Location, on_delete=models.CASCADE)
-
+    schedule_id = models.CharField(max_length=20, primary_key=True, unique=True)
+    room_number = models.ForeignKey('Location', to_field='room_number', on_delete=models.CASCADE)
+    max_size = models.IntegerField()
 
     class Meta:
         db_table = "schedule"
 
 
+class ClassName(models.Model):
+    class_id = models.CharField(max_length=10, primary_key=True)
+    class_name = models.CharField(max_length=100)
+    teacher = models.ForeignKey('Teacher', to_field='teacher_id', on_delete=models.CASCADE)
+    schedule = models.OneToOneField('Schedule', to_field='schedule_id', on_delete=models.CASCADE)
+    max_size = models.IntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    class Meta:
+        db_table = "class_name"
+
+
 class StudentClass(models.Model):
-    student_id = models.ForeignKey(Student, to_field='student_id', on_delete=models.CASCADE)
-    class_id = models.ForeignKey(ClassName, to_field='class_id', on_delete=models.CASCADE)
-    schedule = models.ForeignKey(Schedule, to_field='schedule_id',on_delete=models.CASCADE)
+    student_id = models.ForeignKey('Student', to_field='student_id', on_delete=models.CASCADE)
+    class_id  = models.ForeignKey('ClassName', to_field='class_id', on_delete=models.CASCADE)
     registered_at = models.DateTimeField(auto_now_add=True)
     learning_status = models.CharField(max_length=50)
 
-
     class Meta:
         db_table = "student_class"
+        unique_together = ('student_id', 'class_id')
+
 
 
 

@@ -44,11 +44,11 @@ class StudentClassSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         student_id  = data.get('student_id')
-        class_id  = data.get('class_obj')
+        class_id  = data.get('class_id')
 
 
         if StudentClass.objects.filter(student_id=student_id, class_id=class_id).exists():
-            raise serializers.ValidationError("Sinh viên này đã đăng ký lớp học này rồi.")
+            raise serializers.ValidationError("This student already registered.")
         return data
 
 class TeacherSerializer(ValidationMixin, serializers.ModelSerializer):
