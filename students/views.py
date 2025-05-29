@@ -95,9 +95,13 @@ class ClassNameViewSet(viewsets.ModelViewSet):
     serializer_class = ClassNameSerializer
     lookup_field = 'name'
 
-
-
-
+    def create(self, request, *args, **kwargs):
+        serializer = ClassNameSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     def destroy(self, request, *args, **kwargs):

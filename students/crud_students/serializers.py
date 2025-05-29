@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from students.models import Student, ClassName, StudentClass, Location, Schedule, Teacher
 from students.crud_students.Validations.validations_for_student import ValidationMixin
-
-
+from students.crud_students.Validations.validations_for_class_name import validate_class_max_size
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.exceptions import ValidationError as DRFValidationError
 
 class StudentSerializer(ValidationMixin, serializers.ModelSerializer):
     class Meta:
@@ -14,10 +15,22 @@ class StudentSerializer(ValidationMixin, serializers.ModelSerializer):
 
 
 class ClassNameSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ClassName
         fields = '__all__'
 
+    def validate(self, data):
+        schedule_id = data.get('schedule').schedule_id if data.get('schedule') else None
+        class_max_size = data.get('max_size')
+
+        if schedule_id and class_max_size is not None:
+            try:
+                validate_class_max_size(schedule_id, class_max_size)
+            except DjangoValidationError as e:
+                raise DRFValidationError({'max_size': e.messages})
+
+        return data
 
 class ScheduleSerializer(serializers.ModelSerializer):
 

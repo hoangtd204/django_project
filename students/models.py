@@ -86,7 +86,7 @@ class ClassName(models.Model):
     class_id = models.CharField(max_length=10, primary_key=True)
     class_name = models.CharField(max_length=100)
     teacher = models.ForeignKey('Teacher', to_field='teacher_id', on_delete=models.CASCADE)
-    schedule = models.OneToOneField('Schedule', to_field='schedule_id', on_delete=models.CASCADE)
+    schedule = models.ForeignKey('Schedule', to_field='schedule_id', on_delete=models.CASCADE)
     max_size = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
