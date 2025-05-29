@@ -1,10 +1,11 @@
+from django.contrib.messages import success
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import timedelta
 from django.utils import timezone
-from .models import Student, ClassName, StudentClass
-from students.crud_students.serializers import StudentSerializer, ClassNameSerializer, StudentClassSerializer
+from .models import Student, ClassName, StudentClass, Location, Schedule, Teacher
+from students.crud_students.serializers import StudentSerializer, ClassNameSerializer, StudentClassSerializer, TeacherSerializer, LocationSerializer, ScheduleSerializer
 
 
 #Viewsets for Student
@@ -17,7 +18,7 @@ class StudentViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
            self.perform_create(serializer)
-           return Response(serializer.data, status=status.HTTP_201_CREATED)
+           return Response({"success": True, "data": serializer.data}, status=status.HTTP_201_CREATED)
         else:
            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -124,20 +125,12 @@ class StudentClassViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
 
     def create(self, request, *args, **kwargs):
-        data = request.data.copy()
-
-        if 'start_date' not in data:
-            data['start_date'] = timezone.now().date()
-
-        if 'end_date' not in data:
-            data['end_date'] = timezone.now().date() + timedelta(days=30)
-
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response({"success": True, "data": serializer.data}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
@@ -169,3 +162,16 @@ class StudentClassViewSet(viewsets.ModelViewSet):
             )
 
         return super().destroy(request, *args, **kwargs)
+
+
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+
+class ScheduleViewSet(viewsets.ModelViewSet):
+    queryset = Schedule.objects.all()
+    serializer_class = ScheduleSerializer
+
+class LocationViewSet(viewsets.ModelViewSet):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
