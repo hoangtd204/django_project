@@ -1,11 +1,11 @@
 import re
 from rest_framework import serializers
 
-class StudentValidationMixin:
-    # def validate_student_id(self, value):
-    #     if not re.match(r'^PH\d{5}$', value):
-    #         raise serializers.ValidationError('Student ID must start with "PH" followed by 5 digits (ex: PH12345)')
-    #     return value
+class ValidationMixin:
+    def validate_student_id(self, value):
+        if not re.match(r'^PH\d{5}$', value):
+            raise serializers.ValidationError('Student ID must start with "PH" followed by 5 digits (ex: PH12345)')
+        return value
 
     def validate_name(self, value):
         if not re.match(r'^[A-Za-z ]+$', value):

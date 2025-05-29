@@ -1,87 +1,67 @@
-import re
 from rest_framework import serializers
-from django.utils import timezone
-from datetime import timedelta
 from students.models import Student, ClassName, StudentClass, Location, Schedule, Teacher
-from students.crud_students.validations import StudentValidationMixin
+from students.crud_students.Validations.validations_for_student import ValidationMixin
 
 
 
-class StudentSerializer(StudentValidationMixin, serializers.ModelSerializer):
-    MAJOR_CHOICES = [
-        ("Biotechnology", "Biotechnology"),
-        ("Graphic Design", "Graphic Design"),
-        ("Data Science", "Data Science"),
-        ("Software Engineering", "Software Engineering"),
-        ("Cybersecurity", "Cybersecurity"),
-        ("Cloud Computing", "Cloud Computing"),
-    ]
-    GENDER_CHOICES = [
-        ("male", "male"),
-        ("female", "female")
-    ]
-    STATUS_CHOICES = [
-        ("studying", "studying"),
-        ("dropped out", "dropped out"),
-        ("graduated", "graduated")
-    ]
-    major = serializers.ChoiceField(choices=MAJOR_CHOICES)
-    gender = serializers.ChoiceField(choices=GENDER_CHOICES)
-    status = serializers.ChoiceField(choices=STATUS_CHOICES)
+class StudentSerializer(ValidationMixin, serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = '__all__'
 
 
-class StudentClassSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudentClass
-        fields = '__all__'
 
 
-class ClassNameSerializer(StudentValidationMixin, serializers.ModelSerializer):
+
+class ClassNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassName
         fields = '__all__'
 
 
+class ScheduleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Schedule
+        fields = '__all__'
 
 
-class TeacherSerializer(StudentValidationMixin, serializers.ModelSerializer):
-    MAJOR_CHOICES = [
-        ("Biotechnology", "Biotechnology"),
-        ("Graphic Design", "Graphic Design"),
-        ("Data Science", "Data Science"),
-        ("Software Engineering", "Software Engineering"),
-        ("Cybersecurity", "Cybersecurity"),
-        ("Cloud Computing", "Cloud Computing"),
-    ]
-    GENDER_CHOICES = [
-        ("male", "male"),
-        ("female", "female")
-    ]
-    STATUS_CHOICES = [
-        ("studying", "studying"),
-        ("dropped out", "dropped out"),
-        ("graduated", "graduated")
-    ]
-    major = serializers.ChoiceField(choices=MAJOR_CHOICES)
-    gender = serializers.ChoiceField(choices=GENDER_CHOICES)
-    status = serializers.ChoiceField(choices=STATUS_CHOICES)
+class StudentClassSerializer(serializers.ModelSerializer):
+    class_info = ClassNameSerializer(source='class_id', read_only=True)
+    schedule_info = ScheduleSerializer(source='schedule', read_only=True)
+
+    class Meta:
+        model = StudentClass
+        fields = [
+            'student_id',
+            'class_id',
+            'schedule',
+            'registered_at',
+            'learning_status',
+            'class_info',
+            'schedule_info'
+        ]
+
+    def validate(self, data):
+        student_id  = data.get('student_id')
+        class_id  = data.get('class_obj')
+
+
+        if StudentClass.objects.filter(student_id=student_id, class_id=class_id).exists():
+            raise serializers.ValidationError("Sinh viên này đã đăng ký lớp học này rồi.")
+        return data
+
+class TeacherSerializer(ValidationMixin, serializers.ModelSerializer):
+
     class Meta:
         model = Teacher
         fields = '__all__'
 
 
-class LocationSerializer(StudentValidationMixin, serializers.ModelSerializer):
+class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = '__all__'
 
 
 
-class ScheduleSerializer(StudentValidationMixin, serializers.ModelSerializer):
-
-    class Meta:
-        model = Schedule
-        fields = '__all__'
