@@ -63,12 +63,10 @@ class Teacher(models.Model):
     class Meta:
         db_table = "teacher"
 
-
-
 class Location(models.Model):
     room_number = models.CharField(max_length=10, primary_key=True, unique=True)
     building_name = models.CharField(max_length=100)
-
+    max_size = models.IntegerField()
     class Meta:
         db_table = "location"
 
@@ -86,7 +84,7 @@ class ClassName(models.Model):
     class_id = models.CharField(max_length=10, primary_key=True)
     class_name = models.CharField(max_length=100)
     teacher = models.ForeignKey('Teacher', to_field='teacher_id', on_delete=models.CASCADE)
-    schedule = models.ForeignKey('Schedule', to_field='schedule_id', on_delete=models.CASCADE)
+    schedule_id = models.ForeignKey('Schedule', to_field='schedule_id', on_delete=models.CASCADE)
     max_size = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
@@ -103,7 +101,7 @@ class StudentClass(models.Model):
 
     class Meta:
         db_table = "student_class"
-        unique_together = ('student_id', 'class_id')
+
 
 
 
