@@ -23,16 +23,14 @@ class StudentSerializer(ValidationMixin, serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Nếu update (instance tồn tại) thì student_id thành read_only để không bắt buộc gửi
         if self.instance:
+            # Khi update thì student_id không bắt buộc, không cho sửa
             self.fields['student_id'].read_only = True
 
-    def validate(self, attrs):
-        if self.instance and 'student_id' in attrs:
-            raise serializers.ValidationError({
-                'student_id': 'Student ID cannot be updated.'
-            })
-        return attrs
+    def update(self, instance, validated_data):
+        # Nếu client gửi student_id, bỏ qua nó, không cập nhật
+        validated_data.pop('student_id', None)
+        return super().update(instance, validated_data)
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
