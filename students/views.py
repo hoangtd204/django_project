@@ -202,7 +202,7 @@ class StudentClassViewSet(BaseViewSet):
         else:
             obj = StudentClass.objects.all().select_related('class_id').first()
             if not obj:
-                return self.success_response(data=None, message="No reord found.",status_code=status.HTTP_200_OK )
+                return self.success_response(data=None, message="No record found.",status_code=status.HTTP_200_OK )
 
         serializer = self.get_serializer(obj)
         return self.success_response(data=serializer.data,message="Student class retrieved successfully.", status_code=status.HTTP_200_OK)
