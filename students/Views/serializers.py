@@ -74,6 +74,32 @@ class ScheduleSerializer(serializers.ModelSerializer):
                 validated_data.pop(field_name)
         return super().update(instance, validated_data)
 
+    def validate(self, data):
+        if not self.instance or 'room_number' in data:
+            room_number = data.get('room_number')
+
+            if not room_number:
+                raise DRFValidationError({'room_number': 'This field is required.'})
+
+            room_number_instance = get_instance_by_id(Location, room_number, 'room_number')
+
+            if not hasattr(room_number_instance, 'max_size') or room_number_instance.max_size is None:
+                raise DRFValidationError({'room_number': 'Location missing max_size field or value.'})
+
+            try:
+                validate_max_size(
+                    ClassName,
+                    'room_number',
+                    room_number_instance,
+                    room_number_instance.max_size,
+                    label='Location',
+                    exclude_instance=self.instance
+                )
+            except DjangoValidationError as e:
+                raise DRFValidationError({'room_number': e.messages})
+
+        return data
+
     class Meta:
         model = Schedule
         fields = ['schedule_id', 'room_number', 'max_size', 'room_number_inf']
@@ -174,7 +200,10 @@ class StudentClassSerializer(serializers.ModelSerializer):
             raise DRFValidationError({
                 'student_id': [f"Student status must be 'studying'. Current status: '{student_instance.status}'."]
             })
-
+        if class_instance.status == "cancelled":
+            raise DRFValidationError({
+                'non_field_errors': ['Cannot create studentclass because status is cancelled.']
+            })
         return data
 
 

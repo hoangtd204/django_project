@@ -7,10 +7,7 @@
     <list default="true" id="5966571b-2ad8-4d56-bb1f-0919f23a34bd" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/Validations/validations_for_all.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/Validations/validations_for_all.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/students/Views/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/Views/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/students/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/students/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/students/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

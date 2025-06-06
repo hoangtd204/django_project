@@ -194,17 +194,18 @@ class StudentClassViewSet(BaseViewSet):
             return self.error_response(f"An error occurred: {str(e)}", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def retrieve(self, request, *args, **kwargs):
-
         student_id = request.query_params.get('student_id')
         if student_id:
-            queryset = StudentClass.objects.filter(student_id__student_id=student_id).select_related('class_id')
-            if not queryset.exists():
-                return self.success_response(data=[], message="No records found.")
+            obj = StudentClass.objects.filter(student_id__student_id=student_id).select_related('class_id').first()
+            if not obj:
+                return self.success_response(data=None, message="No record found.",status_code=status.HTTP_200_OK)
         else:
-            queryset = StudentClass.objects.all().select_related('class_id')
+            obj = StudentClass.objects.all().select_related('class_id').first()
+            if not obj:
+                return self.success_response(data=None, message="No record found.",status_code=status.HTTP_200_OK )
 
-        serializer = self.get_serializer(queryset, many=True)
-        return self.success_response(data=serializer.data)
+        serializer = self.get_serializer(obj)
+        return self.success_response(data=serializer.data,message="Student class retrieved successfully.", status_code=status.HTTP_200_OK)
 
     def update (self, request, *args, **kwargs):
         return self.error_response(
@@ -245,9 +246,9 @@ class TeacherViewSet(BaseViewSet):
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance)
-            return self.success_response(data=serializer.data)
-        except Teacher.DoesNotExist:
-            return self.success_response(data=[], message="No records found.")
+            return self.success_response(data=serializer.data, message="Teacher class retrieved successfully.", status_code=status.HTTP_200_OK)
+        except Http404:
+            return self.error_response(message="Teacher not found.", status_code=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -255,7 +256,7 @@ class TeacherViewSet(BaseViewSet):
         if 'teacher_id' in request.data and request.data['teacher_id'] != instance.teacher_id:
             return self.error_response("Updating teacher_id is not allowed.")
 
-        serializer = self.get_serializer(instance, data=request.data, partial=False)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
         has_changes = any(
@@ -263,10 +264,10 @@ class TeacherViewSet(BaseViewSet):
             for field, value in serializer.validated_data.items()
         )
         if not has_changes:
-            return self.success_response(message="No changes detected.", data=serializer.data)
+            return self.success_response(message="No changes detected.", data=serializer.data,status_code=status.HTTP_200_OK)
 
         self.perform_update(serializer)
-        return self.success_response(data=serializer.data, message="Teacher updated successfully.")
+        return self.success_response(data=serializer.data, message="Teacher updated successfully.",status_code=status.HTTP_200_OK)
 
 
     def destroy(self, request, *args, **kwargs):
@@ -284,7 +285,7 @@ class ScheduleViewSet(BaseViewSet):
         try:
             queryset = self.get_queryset().select_related('room_number')
             serializer = self.get_serializer(queryset, many=True)
-            return self.success_response(message="Teacher list retrieved successfully",data=serializer.data, status_code=status.HTTP_200_OK)
+            return self.success_response(message="Schedule list retrieved successfully",data=serializer.data, status_code=status.HTTP_200_OK)
         except Exception as e:
             return self.error_response(f"An error occurred: {str(e)}", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -292,9 +293,9 @@ class ScheduleViewSet(BaseViewSet):
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance)
-            return self.success_response(data=serializer.data)
-        except Teacher.DoesNotExist:
-            return self.success_response(data=[], message="No records found.")
+            return self.success_response(message="Schedule list retrieved successfully",data=serializer.data, status_code=status.HTTP_200_OK)
+        except Schedule.DoesNotExist:
+            return self.success_response(data=[], message="No records found.",status_code=status.HTTP_404_NOT_FOUND)
 
     def destroy(self, request, *args, **kwargs):
         return self.error_response(
@@ -324,10 +325,10 @@ class ScheduleViewSet(BaseViewSet):
             for field, value in serializer.validated_data.items()
         )
         if not has_changes:
-            return Response({"detail": "No changes detected."}, status=status.HTTP_200_OK)
+            return self.success_response(message="No changes detected.", status_code=status.HTTP_200_OK)
 
         self.perform_update(serializer)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.success_response(message="No changes detected.", status_code=status.HTTP_200_OK)
 
 
 class LocationViewSet(BaseViewSet):
@@ -338,7 +339,7 @@ class LocationViewSet(BaseViewSet):
         serializer = self.get_serializer(data=request.data)
 
         if not serializer.is_valid():
-            return self.error_response("Validation failed.", errors=serializer.errors,status_code=status.HTTP_400_BAD_REQUEST)
+            return self.error_response( message="Validation failed.", errors=serializer.errors,status_code=status.HTTP_400_BAD_REQUEST)
         self.perform_create(serializer)
         return self.success_response(data=serializer.data, message="Location created successfully.", status_code=status.HTTP_201_CREATED)
 
