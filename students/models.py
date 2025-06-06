@@ -46,8 +46,9 @@ class Teacher(models.Model):
         ("female", "female")
     ]
     STATUS_CHOICES = [
-        ('teaching', 'teaching'),
-        ('inactive', 'inactive'),
+        ('active', 'active'),
+        ('retired', 'retired'),
+        ('terminated', 'terminated')
     ]
 
     teacher_id = models.CharField(max_length=20, unique=True, primary_key=True)
@@ -81,6 +82,11 @@ class Schedule(models.Model):
 
 
 class ClassName(models.Model):
+    STATUS_CHOICES = [
+        ('ongoing', 'ongoing'),
+        ('completed', 'completed'),
+        ('cancelled', 'cancelled')
+    ]
     class_id = models.CharField(max_length=10, primary_key=True)
     class_name = models.CharField(max_length=100)
     teacher = models.ForeignKey('Teacher', to_field='teacher_id', on_delete=models.CASCADE)
@@ -88,16 +94,21 @@ class ClassName(models.Model):
     max_size = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
-
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     class Meta:
         db_table = "class_name"
 
 
 class StudentClass(models.Model):
+    STATUS_CHOICES = [
+        ('enrolled', 'enrolled'),
+        ('dropped', 'dropped'),
+        ('completed', 'completed')
+    ]
     student_id = models.ForeignKey('Student', to_field='student_id', on_delete=models.CASCADE)
     class_id  = models.ForeignKey('ClassName', to_field='class_id', on_delete=models.CASCADE)
     registered_at = models.DateTimeField(auto_now_add=True)
-    learning_status = models.CharField(max_length=50)
+    learning_status = models.CharField(max_length=20, choices=STATUS_CHOICES)
 
     class Meta:
         db_table = "student_class"
